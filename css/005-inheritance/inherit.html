@@ -1,0 +1,24 @@
+<html>
+  <strong>strong text</strong>
+  <div class="my-component">
+    <p>Now we have a div element with font-weight 500</p>
+    <strong>
+      This strong matches to the strong CSS selector, but we want it to use
+      inherit the .my-component value
+    </strong>
+  </div>
+</html>
+
+<style>
+  strong {
+    font-weight: 900;
+  }
+
+  .my-component {
+    font-weight: 500;
+  }
+
+  .my-component strong {
+    font-weight: inherit;
+  }
+</style>

@@ -1,0 +1,21 @@
+<html>
+  <p>this should be goldenrod</p>
+
+  <aside>
+    <p>We want this to be reset so we just unset everything</p>
+  </aside>
+</html>
+<style>
+  /* Global color styles for paragraph in authored CSS */
+  p {
+    margin-top: 2em;
+    color: goldenrod;
+  }
+
+  /* The p needs to be “reset” in asides, so you can use unset */
+
+  aside p {
+    margin: unset;
+    color: unset;
+  }
+</style>

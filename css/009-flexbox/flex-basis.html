@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="box" contenteditable>Login</div>
+  <div class="box" contenteditable>Welcome to Orbit</div>
+  <div class="box" contenteditable>Sign up</div>
+</div>
+
+<style>
+  .container {
+    display: flex;
+    flex-flow: row wrap;
+    height: 200px; /* Fixed height - items will overflow this */
+    width: auto;
+    background: lightgray;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .box {
+    flex: 1;
+    height: 60px;
+    background: #f56565;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+  }
+
+  .box:nth-child(2) {
+    flex: 3;
+  }
+</style>

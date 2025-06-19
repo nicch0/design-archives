@@ -1,0 +1,26 @@
+<div class="container">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+  <div>Item 4</div>
+  <div>Item 5</div>
+</div>
+
+<style>
+  .container {
+    display: flex;
+    flex-flow: row wrap;
+    width: 300px; /* Small container */
+    height: 300px;
+    background: gray;
+    justify-content: center;
+    align-content: center;
+  }
+
+  .container > div {
+    background: black;
+    color: white;
+    padding: 1rem;
+    margin: 0.2rem;
+  }
+</style>
