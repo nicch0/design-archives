@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Continuous Sine Wave Animation</title>
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .wave-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      .sine-wave {
+        stroke: #00aaff;
+        stroke-width: 1;
+        fill: none;
+        filter: drop-shadow(0 0 8px #00aaff) drop-shadow(0 0 16px #0088cc);
+      }
+
+      .wave-dot {
+        fill: #00aaff;
+        filter: drop-shadow(0 0 5px #00aaff) drop-shadow(0 0 5px #0088cc);
+        animation: dot-pulse 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes dot-pulse {
+        0% {
+          r: 8;
+          filter: drop-shadow(0 0 15px #00aaff) drop-shadow(0 0 30px #0088cc);
+        }
+        100% {
+          r: 12;
+          filter: drop-shadow(0 0 25px #00aaff) drop-shadow(0 0 50px #0088cc);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wave-container">
+      <svg width="100%" height="100%" viewBox="0 0 800 400">
+        <!-- The sine wave path -->
+        <path class="sine-wave" id="wavePath" d="" />
+
+        <!-- The moving dot that follows the wave -->
+        <circle class="wave-dot" id="waveDot" r="8" cx="400" cy="200" />
+      </svg>
+    </div>
+
+    <script>
+      const svg = document.querySelector("svg");
+      const wavePath = document.getElementById("wavePath");
+      const waveDot = document.getElementById("waveDot");
+
+      let time = 0;
+      const amplitude = 80; // Height of the wave
+      const frequency = 0.02; // How many waves across the screen
+      const speed = 0.01; // Animation speed
+      const centerY = 200; // Vertical center
+      const centerX = 400; // Horizontal center for the dot
+
+      function createWavePath(timeOffset) {
+        let pathData = `M 0,${centerY}`;
+
+        // Create sine wave across the screen
+        for (let x = 0; x <= 800; x += 2) {
+          const y = centerY + Math.sin(x * frequency + timeOffset) * amplitude;
+          pathData += ` L ${x},${y}`;
+        }
+
+        return pathData;
+      }
+
+      function animate() {
+        time += speed;
+
+        // Update the wave path
+        wavePath.setAttribute("d", createWavePath(time));
+
+        // Calculate the dot's Y position based on sine wave at center X
+        const dotY = centerY + Math.sin(centerX * frequency + time) * amplitude;
+        waveDot.setAttribute("cy", dotY);
+
+        requestAnimationFrame(animate);
+      }
+
+      // Start the animation
+      animate();
+
+      // Optional: Click to change wave properties
+      document.addEventListener("click", (e) => {
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+
+        // Adjust frequency and amplitude based on mouse position
+        frequency = 0.01 + mouseX * 0.03;
+        amplitude = 40 + mouseY * 80;
+      });
+    </script>
+  </body>
+</html>

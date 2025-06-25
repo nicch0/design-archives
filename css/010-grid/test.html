@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Area Test 3</title>
+    <style>
+      .wrapper {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        grid-template-areas:
+          "hd hd hd hd"
+          "mc mc mc sb"
+          ". ft ft .";
+
+        border: 2px solid grey;
+        min-height: 300px;
+      }
+      .box {
+        background-color: lightblue;
+        border: 1px solid steelblue;
+        padding: 10px;
+        text-align: center;
+      }
+      .header {
+        grid-area: hd;
+        background-color: lightsalmon;
+      }
+      .main-content {
+        grid-area: mc;
+        background-color: lightgoldenrodyellow;
+      }
+      .sidebar {
+        grid-area: sb;
+        background-color: lightgreen;
+      }
+      .footer {
+        grid-area: ft;
+        background-color: lightsteelblue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="box header">Page Header</div>
+      <div class="box main-content">Main Article Content</div>
+      <div class="box sidebar">Right Sidebar</div>
+      <div class="box footer">Page Footer</div>
+    </div>
+  </body>
+</html>

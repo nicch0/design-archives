@@ -1,0 +1,45 @@
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="square red"></div>
+      <div class="square green"></div>
+      <div class="square blue"></div>
+    </div>
+  <div class="container">
+    <div class="row">
+      <div class="square" style="background-color: hsl(0 100% 100%);"></div>
+      <div class="square" style="background-color: hsl(0 100% 90%);"></div>
+      <div class="square" style="background-color: hsl(0 100% 80%);"></div>
+      <div class="square" style="background-color: hsl(0 100% 50%);"></div>
+      <div class="square" style="background-color: hsl(0 100% 30%);"></div>
+    </div>
+  </div>
+  <style>
+    .container {
+      display: flex;
+      flex-flow: column nowrap;
+      gap: 4rem;
+    }
+    .row {
+      display: flex;
+      flex-flow: row nowrap;
+      gap: 2rem;
+    }
+    .square {
+      height: 100px;
+      width: 100px;
+    }
+
+    .red {
+      background-color: hsl(0deg 100% 50%);
+    }
+
+    .green {
+      background-color: hsl(120deg 100% 50%);
+    }
+
+    .blue {
+      background-color: hsl(240deg 100% 50%);
+    }
+  </style>
+</body>

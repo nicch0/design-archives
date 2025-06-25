@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Area Test 4</title>
+    <style>
+      .wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
+        grid-template-areas:
+          "hd"
+          "sb"
+          "mc"
+          "ra";
+
+        border: 2px solid grey;
+        min-height: 400px;
+      }
+
+      .box {
+        background-color: lightblue;
+        border: 1px solid steelblue;
+        padding: 10px;
+        text-align: center;
+      }
+      .header {
+        grid-area: hd;
+        background-color: lightsalmon;
+      }
+      .sidebar {
+        grid-area: sb;
+        background-color: lightgreen;
+      }
+      .main-content {
+        grid-area: mc;
+        background-color: lightgoldenrodyellow;
+      }
+      .right-area {
+        grid-area: ra;
+        background-color: lightcoral;
+      }
+
+      /* Media Query for Desktop goes here */
+
+      @media (min-width: 768px) {
+        .wrapper {
+          grid-template-columns: 100px 1fr 100px;
+          grid-template-rows: repeat(2, 1fr);
+          grid-template-areas:
+            "hd hd hd"
+            "sb mc ra";
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="box header">Site Header</div>
+      <div class="box sidebar">Navigation Sidebar</div>
+      <div class="box main-content">Main Blog Post</div>
+      <div class="box right-area">Related Posts/Ads</div>
+    </div>
+  </body>
+</html>

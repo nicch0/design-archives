@@ -1,0 +1,46 @@
+<div class="card">
+  <div class="image">IMG</div>
+  <div class="info">
+    <h3 class="name">Wireless Headphones</h3>
+    <p class="description" contenteditable>
+      High-quality sound with noise cancellation and 20-hour battery life.
+    </p>
+    <div class="price">$19.99</div>
+  </div>
+</div>
+
+<style>
+  .card {
+    width: 400px;
+    display: flex;
+    flex-flow: row;
+    padding: 15px;
+    border: 0.1rem solid black;
+  }
+
+  .image {
+    width: 150px;
+    height: 150px;
+    background: palevioletred;
+    flex: 0 0 auto;
+    margin-right: 1rem;
+  }
+
+  .name {
+    font-weight: 700;
+  }
+
+  .price {
+    align-self: flex-end;
+  }
+
+  .info {
+    display: flex;
+    flex: 1 1 0;
+    flex-flow: column;
+  }
+
+  .description {
+    flex: 1 1 0;
+  }
+</style>

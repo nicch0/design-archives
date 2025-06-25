@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Grid Challenge</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
+    <style>
+      /* Your CSS will go here */
+      .wrapper {
+        /* This is your grid container [6] */
+        display: grid;
+        /* Add your grid properties here */
+        grid-template-columns: 100px 2fr 1fr;
+        grid-template-rows: repeat(3, minmax(150px, auto));
+        grid-auto-rows: minmax(150px, auto);
+        gap: 20px;
+
+        /* Visual aids - do not modify */
+        border: 2px solid lightcoral;
+        min-height: 600px;
+        box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+      }
+      .box {
+        background-color: lightblue;
+        border: 1px solid steelblue;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.2em;
+        box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+      }
+      /* Specific item styles for distinction */
+      .box:nth-child(1) {
+        background-color: lightgreen;
+        grid-column: 1 / 3;
+        grid-row: 1 / 2;
+      }
+      .box:nth-child(2) {
+        background-color: lightsalmon;
+        grid-column: 2 / 4;
+        grid-row: 2 / 4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="box">Item 1</div>
+      <div class="box">Item 2</div>
+      <div class="box">Item 3</div>
+      <div class="box">Item 4</div>
+      <div class="box">Item 5</div>
+      <div class="box">Item 6</div>
+      <div class="box">Item 7</div>
+      <div class="box">Item 8</div>
+      <div class="box">Item 9</div>
+    </div>
+  </body>
+</html>

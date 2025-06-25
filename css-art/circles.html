@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Trigonometry Circle</title>
+    <style>
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: #ffffff;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      #animation-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      canvas {
+        background-color: #ffffff;
+        /* A subtle border to define the canvas area */
+        border: 1px solid #e0e0e0;
+      }
+
+      #controls {
+        padding: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        max-width: 90vw;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 14px;
+      }
+
+      input[type="range"] {
+        width: 200px;
+      }
+
+      button {
+        padding: 8px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+      }
+
+      button:hover {
+        background-color: #eee;
+      }
+
+      /* Custom Checkbox Styles for Color Coding */
+      .color-checkbox {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      .color-checkbox input {
+        display: none; /* Hide the default checkbox */
+      }
+      .color-checkbox .checkmark {
+        height: 16px;
+        width: 16px;
+        border-radius: 3px;
+        margin-right: 5px;
+        display: inline-block;
+        position: relative;
+        transition: background-color 0.2s;
+      }
+      .color-checkbox input + .checkmark::after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 5px;
+        top: 2px;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .color-checkbox input:checked + .checkmark::after {
+        display: block;
+      }
+
+      #sin-check + .checkmark {
+        border: 1px solid #2d7df6;
+      }
+      #sin-check:checked + .checkmark {
+        background-color: #2d7df6;
+      }
+      #cos-check + .checkmark {
+        border: 1px solid #e03e3e;
+      }
+      #cos-check:checked + .checkmark {
+        background-color: #e03e3e;
+      }
+      #tan-check + .checkmark {
+        border: 1px solid #2a9c48;
+      }
+      #tan-check:checked + .checkmark {
+        background-color: #2a9c48;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="animation-container">
+      <canvas id="trigCanvas"></canvas>
+    </div>
+
+    <div id="controls">
+      <div class="control-group">
+        <label for="angleSlider">Angle: <span id="angleValue">0</span>°</label>
+        <input
+          type="range"
+          id="angleSlider"
+          min="0"
+          max="360"
+          value="0"
+          step="0.5"
+        />
+      </div>
+
+      <button id="playPauseBtn">Play</button>
+
+      <div class="control-group">
+        <label class="color-checkbox" for="sin-check">
+          <input type="checkbox" id="sin-check" checked />
+          <span class="checkmark"></span> Sine
+        </label>
+      </div>
+      <div class="control-group">
+        <label class="color-checkbox" for="cos-check">
+          <input type="checkbox" id="cos-check" checked />
+          <span class="checkmark"></span> Cosine
+        </label>
+      </div>
+      <div class="control-group">
+        <label class="color-checkbox" for="tan-check">
+          <input type="checkbox" id="tan-check" />
+          <span class="checkmark"></span> Tangent
+        </label>
+      </div>
+    </div>
+
+    <script>
+      // ============== SETUP ==============
+      const canvas = document.getElementById("trigCanvas");
+      const ctx = canvas.getContext("2d");
+
+      const angleSlider = document.getElementById("angleSlider");
+      const angleValueSpan = document.getElementById("angleValue");
+      const playPauseBtn = document.getElementById("playPauseBtn");
+      const sinCheck = document.getElementById("sin-check");
+      const cosCheck = document.getElementById("cos-check");
+      const tanCheck = document.getElementById("tan-check");
+
+      const COLOR_SIN = "#2d7df6";
+      const COLOR_COS = "#e03e3e";
+      const COLOR_TAN = "#2a9c48";
+      const COLOR_GRID = "#e0e0e0";
+      const COLOR_AXIS = "#aaaaaa";
+      const COLOR_MAIN = "#333333";
+
+      let angle = 0;
+      let isPlaying = false;
+      let radius, origin, waveStart;
+
+      function setupCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = document
+          .getElementById("animation-container")
+          .getBoundingClientRect();
+
+        canvas.width = rect.width * 0.95 * dpr;
+        canvas.height = Math.min(window.innerHeight * 0.6, 500) * dpr;
+
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${canvas.width / dpr}px`;
+        canvas.style.height = `${canvas.height / dpr}px`;
+
+        radius = canvas.height / dpr / 3;
+        origin = { x: canvas.width / dpr / 4, y: canvas.height / dpr / 2 };
+        waveStart = origin.x + radius + 50;
+      }
+
+      // ============== EVENT LISTENERS ==============
+      angleSlider.addEventListener("input", (e) => {
+        angle = parseFloat(e.target.value);
+        if (isPlaying) {
+          pauseAnimation();
+        }
+        draw();
+      });
+
+      playPauseBtn.addEventListener("click", () => {
+        if (isPlaying) {
+          pauseAnimation();
+        } else {
+          playAnimation();
+        }
+      });
+
+      [sinCheck, cosCheck, tanCheck].forEach((check) =>
+        check.addEventListener("change", draw),
+      );
+      window.addEventListener("resize", () => {
+        setupCanvas();
+        draw();
+      });
+
+      function playAnimation() {
+        isPlaying = true;
+        playPauseBtn.textContent = "Pause";
+        animate();
+      }
+
+      function pauseAnimation() {
+        isPlaying = false;
+        playPauseBtn.textContent = "Play";
+      }
+
+      // ============== DRAWING FUNCTIONS ==============
+
+      // ============== [REPLACE THIS FUNCTION] ==============
+      function drawGrid() {
+        ctx.strokeStyle = COLOR_GRID;
+        ctx.lineWidth = 1;
+        const waveXScale = radius * 0.5; // Controls wave compression. Smaller value = more compressed.
+
+        // Vertical grid lines, spaced according to the new compressed scale
+        for (
+          let x = waveStart;
+          x < canvas.width;
+          x += (Math.PI / 2) * waveXScale
+        ) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+        // Horizontal grid lines (unchanged)
+        for (let y = origin.y - radius; y <= origin.y + radius; y += radius) {
+          ctx.beginPath();
+          ctx.moveTo(waveStart, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
+      }
+
+      function drawAxes() {
+        ctx.strokeStyle = COLOR_AXIS;
+        ctx.lineWidth = 1.5;
+
+        // Circle axes
+        ctx.beginPath();
+        ctx.moveTo(origin.x - radius * 1.2, origin.y);
+        ctx.lineTo(origin.x + radius * 1.2, origin.y); // X-axis
+        ctx.moveTo(origin.x, origin.y - radius * 1.2);
+        ctx.lineTo(origin.x, origin.y + radius * 1.2); // Y-axis
+        ctx.stroke();
+
+        // Waveform axis
+        ctx.beginPath();
+        ctx.moveTo(waveStart, origin.y);
+        ctx.lineTo(canvas.width, origin.y);
+        ctx.stroke();
+      }
+
+      function drawCircle() {
+        ctx.strokeStyle = COLOR_MAIN;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(origin.x, origin.y, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+
+      function drawAngle(rad) {
+        const x = origin.x + radius * Math.cos(rad);
+        const y = origin.y - radius * Math.sin(rad);
+
+        // Rotating point on circle
+        ctx.fillStyle = COLOR_MAIN;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // Radius line
+        ctx.strokeStyle = COLOR_MAIN;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(origin.x, origin.y);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        // Trig lines inside circle
+        if (sinCheck.checked) {
+          ctx.strokeStyle = COLOR_SIN;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, origin.y);
+          ctx.stroke();
+        }
+        if (cosCheck.checked) {
+          ctx.strokeStyle = COLOR_COS;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(origin.x, y);
+          ctx.stroke();
+        }
+
+        // Tangent line
+        if (tanCheck.checked) {
+          const tanValue = Math.tan(rad);
+          // Cap the tangent value to avoid extreme lines near asymptotes
+          const cappedTan = Math.max(-10, Math.min(10, tanValue));
+
+          const tanX = origin.x + radius;
+          const tanY = origin.y - radius * cappedTan;
+
+          ctx.strokeStyle = COLOR_TAN;
+          ctx.lineWidth = 2.5;
+
+          // Line from circle edge to tangent point
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(tanX, tanY);
+          ctx.stroke();
+
+          // Tangent line on the axis x=1
+          ctx.beginPath();
+          ctx.moveTo(tanX, origin.y);
+          ctx.lineTo(tanX, tanY);
+          ctx.stroke();
+        }
+      }
+
+      // ============== [AND REPLACE THIS FUNCTION] ==============
+      function drawWaves(currentRad) {
+        ctx.lineWidth = 2.5;
+        // This factor MUST match the one in drawGrid() for alignment
+        const waveXScale = radius * 0.5;
+
+        function drawWave(color, func, show) {
+          if (!show) return;
+          ctx.strokeStyle = color;
+          ctx.beginPath();
+          let firstPoint = true;
+          // The loop still only draws up to the current angle to preserve the "growing" effect
+          for (let i = 0; i <= currentRad; i += 0.01) {
+            // This is the key change: x position is now based on the new scale
+            const x = waveStart + i * waveXScale;
+
+            let val = func(i);
+            // For tangent, check for asymptotes to prevent vertical lines
+            if (Math.abs(Math.cos(i)) < 0.01 && func === Math.tan) {
+              firstPoint = true; // Start a new path after asymptote
+              continue;
+            }
+            const y = origin.y - val * radius;
+
+            if (firstPoint) {
+              ctx.moveTo(x, y);
+              firstPoint = false;
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          ctx.stroke();
+
+          // Draw moving dot on the wave, using the same new scale
+          const dotX = waveStart + currentRad * waveXScale;
+          let dotYVal = func(currentRad);
+          if (Math.abs(Math.cos(currentRad)) > 0.01 || func !== Math.tan) {
+            const dotY = origin.y - dotYVal * radius;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Connecting line (unchanged logic)
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            const circlePointX = origin.x + radius * Math.cos(currentRad);
+            const circlePointY = origin.y - radius * Math.sin(currentRad);
+
+            if (func === Math.sin) {
+              ctx.beginPath();
+              ctx.moveTo(circlePointX, circlePointY);
+              ctx.lineTo(dotX, dotY);
+              ctx.stroke();
+            } else if (func === Math.cos) {
+              ctx.beginPath();
+              ctx.moveTo(circlePointX, circlePointY);
+              ctx.lineTo(dotX, dotY);
+              ctx.stroke();
+            } else if (func === Math.tan) {
+              const tanX = origin.x + radius;
+              const tanY = origin.y - radius * dotYVal;
+              ctx.beginPath();
+              ctx.moveTo(tanX, tanY);
+              ctx.lineTo(dotX, dotY);
+              ctx.stroke();
+            }
+            ctx.setLineDash([]); // Reset line dash
+          }
+        }
+
+        drawWave(COLOR_SIN, Math.sin, sinCheck.checked);
+        drawWave(COLOR_COS, Math.cos, cosCheck.checked);
+        drawWave(COLOR_TAN, Math.tan, tanCheck.checked);
+      }
+
+      // ============== MAIN ANIMATION LOOP ==============
+      function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update display
+        angleSlider.value = angle;
+        angleValueSpan.textContent = Math.round(angle);
+
+        const currentRad = angle * (Math.PI / 180);
+
+        // Draw components
+        drawGrid();
+        drawAxes();
+        drawCircle();
+        drawWaves(currentRad); // Draw waves first so they are behind the circle elements
+        drawAngle(currentRad);
+      }
+
+      function animate() {
+        if (!isPlaying) return;
+
+        angle = (angle + 0.5) % 360;
+
+        draw();
+        requestAnimationFrame(animate);
+      }
+
+      // Initial setup and draw
+      setupCanvas();
+      draw();
+    </script>
+  </body>
+</html>

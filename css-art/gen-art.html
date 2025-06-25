@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Golden Spiral Art</title>
+    <style>
+      body {
+        margin: 0;
+        background: hsl(0, 0%, 3.9%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .spiral {
+        position: relative;
+        width: 0;
+        height: 0;
+      }
+
+      .spiral-point {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        /* Mathematical positioning using custom properties */
+        --angle: calc(var(--i) * 137.5deg); /* Golden angle */
+        --radius: calc(
+          sqrt(var(--i)) * 12px
+        ); /* Square root for natural spacing */
+        --hue: calc(var(--i) * 137.5 + 180); /* Color based on golden angle */
+
+        /* Apply the mathematical transformations */
+        transform: rotate(var(--angle)) translateX(var(--radius))
+          rotate(calc(-1 * var(--angle))); /* Keep dots upright */
+
+        /* Beautiful gradient colors */
+        background: radial-gradient(
+          circle,
+          hsl(var(--hue), 70%, 60%),
+          hsl(var(--hue), 90%, 40%)
+        );
+
+        /* Subtle glow effect */
+        box-shadow:
+          0 0 10px hsla(var(--hue), 70%, 60%, 0.5),
+          0 0 20px hsla(var(--hue), 70%, 60%, 0.2);
+
+        /* Smooth animation */
+        animation: pulse 3s ease-in-out infinite;
+        animation-delay: calc(var(--i) * 0.02s);
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: rotate(var(--angle)) translateX(var(--radius))
+            rotate(calc(-1 * var(--angle))) scale(1);
+        }
+        50% {
+          transform: rotate(var(--angle)) translateX(var(--radius))
+            rotate(calc(-1 * var(--angle))) scale(1.2);
+        }
+      }
+
+      /* Optional: Rotating the entire spiral */
+      .spiral {
+        animation: rotate 60s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(350deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="spiral" id="spiral"></div>
+    </div>
+
+    <script>
+      // Generate the spiral points
+      function createSpiral() {
+        const spiral = document.getElementById("spiral");
+        const numberOfPoints = 500; // Adjust for more/fewer points
+
+        for (let i = 0; i < numberOfPoints; i++) {
+          const point = document.createElement("div");
+          point.className = "spiral-point";
+
+          // Set the index as a CSS custom property
+          point.style.setProperty("--i", i);
+
+          spiral.appendChild(point);
+        }
+      }
+
+      // Create the spiral when page loads
+      createSpiral();
+
+      // Optional: Interactive features
+      document.addEventListener("mousemove", (e) => {
+        const mouseX = (e.clientX / window.innerWidth - 0.5) * 20;
+        const mouseY = (e.clientY / window.innerHeight - 0.5) * 20;
+
+        document.documentElement.style.setProperty("--mouse-x", mouseX + "deg");
+        document.documentElement.style.setProperty("--mouse-y", mouseY + "deg");
+      });
+    </script>
+  </body>
+</html>
